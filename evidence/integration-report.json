@@ -1,0 +1,93 @@
+{
+  "ready": false,
+  "verified_points": 6,
+  "passing_points": 4,
+  "unverified_points": 4,
+  "score": 67,
+  "pillars": {
+    "operations": 1.0,
+    "reliability": 0.6
+  },
+  "points": [
+    {
+      "id": "IP01",
+      "name": "Data ingestion → Kafka",
+      "owner": "team-ingestion",
+      "status": "ready",
+      "detail": "1 broker(s); 4 declared topics present",
+      "readiness_check": "reliability.kafka_topics"
+    },
+    {
+      "id": "IP02",
+      "name": "Kafka → Airflow pipeline",
+      "owner": "team-ingestion",
+      "status": "unverified",
+      "detail": "not probed from the serving process; prove with evidence/ip02-airflow-run.json",
+      "readiness_check": "reliability.airflow_pipeline"
+    },
+    {
+      "id": "IP03",
+      "name": "Pipeline → Delta Lake / Lakehouse",
+      "owner": "team-data",
+      "status": "not_ready",
+      "detail": "feedback: no Delta table at .lab28/delta/feedback; documents: no Delta table at .lab28/delta/documents",
+      "readiness_check": "reliability.delta_transaction_log"
+    },
+    {
+      "id": "IP04",
+      "name": "Lakehouse → Feature Store (Feast)",
+      "owner": "team-data",
+      "status": "ready",
+      "detail": "ok",
+      "readiness_check": "reliability.feature_store"
+    },
+    {
+      "id": "IP05",
+      "name": "Data → Vector Store (embeddings)",
+      "owner": "team-serving",
+      "status": "ready",
+      "detail": "13 points; ok",
+      "readiness_check": "reliability.vector_store"
+    },
+    {
+      "id": "IP06",
+      "name": "MLflow → Model Registry",
+      "owner": "team-data",
+      "status": "ready",
+      "detail": "lab28-rag-release v3 is champion",
+      "readiness_check": "operations.model_rollback"
+    },
+    {
+      "id": "IP07",
+      "name": "Model → vLLM / SGLang serving",
+      "owner": "team-serving",
+      "status": "not_ready",
+      "detail": "not a verifiable vLLM server: unreachable: ConnectError",
+      "readiness_check": "reliability.inference_endpoint"
+    },
+    {
+      "id": "IP08",
+      "name": "Serving → API Gateway",
+      "owner": "team-platform",
+      "status": "unverified",
+      "detail": "not probed from the serving process; prove with evidence/ip08-gateway.json",
+      "readiness_check": "security.gateway_policy"
+    },
+    {
+      "id": "IP09",
+      "name": "All components → Prometheus / Grafana",
+      "owner": "team-platform",
+      "status": "unverified",
+      "detail": "not probed from the serving process; prove with evidence/ip09-prometheus-targets.json + evidence/ip09-grafana-dashboards.json",
+      "readiness_check": "observability.metrics_and_alerts"
+    },
+    {
+      "id": "IP10",
+      "name": "All components → LangSmith tracing",
+      "owner": "team-platform",
+      "status": "unverified",
+      "detail": "not probed from the serving process; prove with evidence/ip10-trace.json",
+      "readiness_check": "observability.trace_continuity"
+    }
+  ]
+}
