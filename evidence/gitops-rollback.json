@@ -1,0 +1,42 @@
+{
+  "runbook": "runbooks/gitops-rollback.md",
+  "validation": {
+    "command": "uv run python scripts/validate_manifests.py",
+    "exit_code": 0,
+    "result": "Kubernetes and GitOps manifest contracts passed"
+  },
+  "desired_state": {
+    "file": "gitops/application.yaml",
+    "kind": "argoproj.io/v1alpha1 Application",
+    "target_revision": "refs/tags/v3.0.0",
+    "path": "deploy/kubernetes/base",
+    "sync_policy": {"automated": true, "prune": true, "selfHeal": true},
+    "revision_history_limit": 5
+  },
+  "workload": {
+    "file": "deploy/kubernetes/base/api.yaml",
+    "replicas": 2,
+    "image": "ghcr.io/vinuni-ai20k/day28-platform-api:3.0.0",
+    "probes": {
+      "startupProbe": "/health",
+      "livenessProbe": "/health",
+      "readinessProbe": "/ready"
+    },
+    "security": {
+      "runAsNonRoot": true,
+      "allowPrivilegeEscalation": false,
+      "readOnlyRootFilesystem": true
+    }
+  },
+  "rollback_procedure": [
+    "Doi targetRevision trong gitops/application.yaml sang tag truoc do.",
+    "Commit va push; Argo CD sync theo desired state moi.",
+    "Kiem tra replicas, gateway route va trace sau khi sync.",
+    "Khong sua truc tiep tren cluster; selfHeal=true se revert live edit."
+  ],
+  "drift_self_heal": {
+    "status": "UNVERIFIED",
+    "reason": "Khong co cluster Kubernetes va Argo CD trong moi truong lab nay. Manifest va sync policy da validate tinh; drift/self-heal chua chay that."
+  },
+  "why_image_tag_is_immutable": "Tag 3.0.0 co dinh nen rollback la doi con tro Git, khong phai build lai. Dung :latest thi khong ro dang chay ban nao va khong rollback duoc."
+}
