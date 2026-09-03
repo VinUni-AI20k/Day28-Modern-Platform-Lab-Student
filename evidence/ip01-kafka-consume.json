@@ -1,0 +1,29 @@
+{
+  "topic": "data.raw",
+  "key": "asker-01847",
+  "partition": 0,
+  "offset": 9,
+  "headers": {
+    "traceparent": "00-15dafead3b6987ea593cdc53dcdd766a-9b223fb4ece7300b-01",
+    "idempotency-key": "asker-01847",
+    "schema_version": "1"
+  },
+  "trace_id": "15dafead3b6987ea593cdc53dcdd766a",
+  "value": {
+    "schema_version": "1",
+    "event_id": "72b1d820bb9f4655bf08dc78d5c12458",
+    "idempotency_key": "fb:asker-01847:9f54b1cd685a06f865e533225a16421d",
+    "entity_id": "asker-01847",
+    "occurred_at": "2026-09-03T07:49:50.837529Z",
+    "producer": "lab28-api",
+    "traceparent": "00-15dafead3b6987ea593cdc53dcdd766a-b7b81358f728e5e9-01",
+    "payload": {
+      "kind": "feedback",
+      "asker_id": "asker-01847",
+      "text": "Hệ thống phản hồi rất nhanh và chính xác",
+      "rating": 5,
+      "locale": "vi",
+      "label": null
+    }
+  }
+}

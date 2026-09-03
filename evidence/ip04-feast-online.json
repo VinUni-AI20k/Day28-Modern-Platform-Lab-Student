@@ -1,0 +1,25 @@
+{
+  "entity": {
+    "asker_id": "asker-01847"
+  },
+  "feature_service": "asker_serving_v1",
+  "features": {
+    "schema_version": "1",
+    "asker_id": "asker-01847",
+    "feedback_count": 1,
+    "avg_rating": 5.0,
+    "negative_ratio": 0.0,
+    "last_event_ts": "2026-09-03T07:24:46Z",
+    "delta_version": 1
+  },
+  "statuses": {
+    "asker_id": "PRESENT",
+    "avg_rating": "PRESENT",
+    "feedback_count": "PRESENT",
+    "delta_version": "PRESENT",
+    "negative_ratio": "PRESENT"
+  },
+  "degraded": false,
+  "freshness_seconds": 3611.975428,
+  "lookup_ms": 394.1477000003033
+}

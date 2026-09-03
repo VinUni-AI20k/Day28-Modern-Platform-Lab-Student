@@ -1,0 +1,102 @@
+{
+  "targets": [
+    {
+      "job": "lab28-airflow-batch",
+      "url": "http://pushgateway:9091/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:19.170704277Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-api",
+      "url": "http://api:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:22.763452928Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-collector",
+      "url": "http://otel-collector:8888/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:21.782961426Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-feast",
+      "url": "http://feast:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:20.48107243Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-gateway",
+      "url": "http://gateway:9901/stats/prometheus",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:23.112472179Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-kafka",
+      "url": "http://kafka-exporter:9308/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:22.343004762Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-mlflow",
+      "url": "http://api:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:22.191124442Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-prometheus",
+      "url": "http://prometheus:9090/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:19.187212969Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-qdrant",
+      "url": "http://qdrant:6333/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T08:23:18.6905865Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-vllm-optional",
+      "url": "http://host.docker.internal:8001/metrics",
+      "health": "down",
+      "last_scrape": "2026-09-03T08:23:18.84443494Z",
+      "last_error": "Get \"http://host.docker.internal:8001/metrics\": dial tcp 192.168.65.254:8001: connect: connection refused"
+    }
+  ],
+  "rules": [
+    {
+      "name": "Lab28ApiUnavailable",
+      "type": "alerting",
+      "health": "ok",
+      "duration": 30,
+      "labels": {
+        "severity": "critical"
+      },
+      "annotations": {
+        "description": "Check the API container and its Kafka, Qdrant and MLflow dependencies.",
+        "summary": "Lab 28 API is not being scraped"
+      }
+    },
+    {
+      "name": "Lab28HighErrorRatio",
+      "type": "alerting",
+      "health": "ok",
+      "duration": 120,
+      "labels": {
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "Use the trace ID and readiness breakdown to identify the failing boundary.",
+        "summary": "More than 5 percent of Lab 28 requests are failing"
+      }
+    }
+  ]
+}

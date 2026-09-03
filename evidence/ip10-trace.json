@@ -1,0 +1,10 @@
+{
+  "trace_id": "4efab9643b3b4baa123a7ddd3b5c2012",
+  "span_count": 1,
+  "span_names": [
+    "GET"
+  ],
+  "services": [
+    "lab28-api"
+  ]
+}

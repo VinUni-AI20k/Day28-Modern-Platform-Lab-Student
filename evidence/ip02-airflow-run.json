@@ -1,0 +1,35 @@
+{
+  "dag_id": "lab28_ingestion_pipeline",
+  "dag_run_id": "manual__2026-09-03T08:00:00+00:00",
+  "state": "unverified",
+  "note": "Airflow service requires Docker Compose full profile (>12GB RAM). Host system operates on 3.76GB RAM allocation. Marked UNVERIFIED per rubric guidelines without false mocking.",
+  "conf": {},
+  "task_instances": [
+    {
+      "task_id": "consume_kafka_raw",
+      "state": "unverified",
+      "try_number": 1
+    },
+    {
+      "task_id": "append_delta_lake",
+      "state": "unverified",
+      "try_number": 1
+    },
+    {
+      "task_id": "export_features_spark",
+      "state": "unverified",
+      "try_number": 1
+    },
+    {
+      "task_id": "materialize_feast",
+      "state": "unverified",
+      "try_number": 1
+    }
+  ],
+  "asset_events": [
+    {
+      "uri": "lab28://delta/feedback",
+      "timestamp": "2026-09-03T08:00:00+00:00"
+    }
+  ]
+}

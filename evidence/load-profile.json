@@ -1,0 +1,18 @@
+{
+  "target": "http://localhost:8000/ready",
+  "concurrency": 4,
+  "total_requests": 50,
+  "status_counts": {
+    "200": 49,
+    "0": 1
+  },
+  "latency_ms": {
+    "p50": 2558.21,
+    "p95": 4296.35,
+    "p99": 10163.38
+  },
+  "bottleneck_analysis": {
+    "primary_bottleneck": "I/O bound synchronous readiness checks to downstream dependencies (vLLM connection retry timeout and Kafka broker probe)",
+    "recommendation": "Decouple dependency health checks with asynchronous background caching (cached readiness probe) to reduce P95/P99 latency down to sub-10ms."
+  }
+}
