@@ -1,7 +1,7 @@
 # Báo Cáo Phân Tích Kỹ Thuật & Tự Đánh Giá
 
-**Học viên thực hiện:** Cá nhân  
-**Nhánh bài làm:** `ca-nhan-student`  
+**Học viên thực hiện:** Kiên (Cá nhân)  
+**Nhánh bài làm:** `ca-nhan-kien`  
 **Đề tài:** Lab 28 Track 2 — Platform Integration & Production Readiness  
 
 ---
