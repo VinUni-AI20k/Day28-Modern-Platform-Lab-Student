@@ -1,0 +1,67 @@
+{
+  "scenario": "feast-down",
+  "runbook": "runbooks/failure-injection.md",
+  "hypothesis": "Feast la dependency khong bat buoc; dung Feast thi /ready phai chuyen degraded va van tra 200, khong duoc mat du lieu Delta/Qdrant.",
+  "signal_watched": [
+    "GET /ready -> status field",
+    "component feast -> ready=false, detail hien ly do",
+    "delta feedback/documents version + rows",
+    "qdrant points"
+  ],
+  "timeline": [
+    {
+      "phase": "baseline",
+      "at": "2026-09-03T09:20:06Z",
+      "http_ready": 200,
+      "ready_status": "degraded",
+      "delta": {"feedback": {"version": 9, "rows": 20}, "documents": {"version": 6, "rows": 18}},
+      "qdrant_points": 18,
+      "feast": "ok",
+      "note": "vllm da down tu truoc, la gap da biet cua IP07"
+    },
+    {
+      "phase": "inject",
+      "at": "2026-09-03T09:20:30Z",
+      "command": "docker compose --env-file ports.template stop feast"
+    },
+    {
+      "phase": "observe",
+      "at": "2026-09-03T09:20:35Z",
+      "http_ready": 200,
+      "ready_status": "degraded",
+      "components": {
+        "kafka": {"ready": true, "detail": "1 broker(s); 4 declared topics present"},
+        "mlflow": {"ready": true, "detail": "lab28-rag-release v2 is champion"},
+        "qdrant": {"ready": true, "detail": "18 points; ok"},
+        "vllm": {"ready": false, "detail": "unreachable: ConnectError"},
+        "feast": {"ready": false, "detail": "unreachable: ConnectError"}
+      },
+      "matched_hypothesis": true
+    },
+    {
+      "phase": "recover",
+      "at": "2026-09-03T09:20:50Z",
+      "command": "docker compose --env-file ports.template start feast; docker compose --env-file ports.template up -d --wait feast",
+      "result": "Container lab28-platform-feast-1 Healthy"
+    },
+    {
+      "phase": "verify",
+      "at": "2026-09-03T09:21:20Z",
+      "http_ready": 200,
+      "ready_status": "degraded",
+      "delta": {"feedback": {"version": 9, "rows": 20}, "documents": {"version": 6, "rows": 18}},
+      "qdrant_points": 18,
+      "feast": "ok"
+    }
+  ],
+  "no_data_loss_proof": {
+    "delta_feedback_version": {"before": 9, "after": 9, "unchanged": true},
+    "delta_feedback_rows": {"before": 20, "after": 20, "unchanged": true},
+    "delta_documents_version": {"before": 6, "after": 6, "unchanged": true},
+    "delta_documents_rows": {"before": 18, "after": 18, "unchanged": true},
+    "qdrant_points": {"before": 18, "after": 18, "unchanged": true},
+    "kafka_consumer_lag": {"lab28-pipeline": 0, "lab28-pipeline-it-c3371c31": 0}
+  },
+  "conclusion": "Optional dependency fail -> degraded, khong phai not_ready. Gateway van dinh tuyen. Khong dung down -v nen state giu nguyen. Row count va version truoc/sau giong nhau -> khong mat du lieu.",
+  "residual_gap": "vllm van unreachable; IP07 chua co evidence that."
+}

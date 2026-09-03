@@ -1,0 +1,43 @@
+{
+  "collection": "lab28_documents",
+  "question": "Nền tảng dữ liệu của lab này gồm những thành phần nào?",
+  "points_total": 18,
+  "embedding_model_id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2@faf4aa4225822f3bc6376869cb1164e8e3feedd0",
+  "results": [
+    {
+      "doc_id": "doc-ip09-metrics",
+      "title": "IP09 — Prometheus và Grafana giám sát nền tảng",
+      "snippet": "Prometheus thu thập số liệu từ API, Feast, Qdrant và vLLM, còn Grafana hiển thị chúng theo từng chặng của hành trình yêu cầu. Các chỉ số quan trọng gồm lab28_request_seconds, lab28_degraded_responses_total, lab28_latency_budget_exceeded_total và lab28_component_ready. Vượt ngân sách độ trễ không làm hỏng yêu cầu, nhưng làm tăng bộ đếm để hồi quy hiệu năng lộ ra trên bảng điều khiển trước khi trở t",
+      "score": 0.8333334,
+      "retrieval_mode": "hybrid"
+    },
+    {
+      "doc_id": "doc-degraded-policy",
+      "title": "Suy giảm phải luôn hiển thị",
+      "snippet": "Nền tảng cho phép trả lời trên đường suy giảm khi Feast hoặc Qdrant không sẵn sàng, nhưng bắt buộc phải ghi lý do vào phần bằng chứng và tăng bộ đếm lab28_degraded_responses_total. Đặt biến môi trường LAB28_ALLOW_DEGRADED thành false sẽ chuyển sang chế độ thất bại đóng: yêu cầu bị từ chối thay vì được trả lời trên đường thiếu dữ liệu.",
+      "score": 0.5833333,
+      "retrieval_mode": "hybrid"
+    },
+    {
+      "doc_id": "doc-ip10-tracing",
+      "title": "IP10 — OpenTelemetry nối liền một dấu vết",
+      "snippet": "Ngữ cảnh trace đi theo chuẩn W3C traceparent từ cổng vào, qua API, qua header của Kafka, sang Airflow và Spark, rồi tới truy hồi và suy luận. Một dấu vết liên tục phải chứa đủ các span đã khai báo trong ma trận tích hợp. Phản hồi trả về trace_id trong thân và trong header, nên dán một giá trị đó vào Grafana hay LangSmith là thấy lại toàn bộ yêu cầu.",
+      "score": 0.39583334,
+      "retrieval_mode": "hybrid"
+    },
+    {
+      "doc_id": "doc-ip06-mlflow",
+      "title": "IP06 — MLflow là sổ đăng ký bản phát hành",
+      "snippet": "Thứ được đăng ký trong MLflow là một bản phát hành, không phải bộ trọng số. Bản phát hành gồm prompt, cấu hình truy hồi, model id được phục vụ và phiên bản dữ liệu dùng để đánh giá. Nền tảng dùng alias champion thay cho stage: alias cho biết phiên bản nào đang thực sự phục vụ, và quay lui chỉ là một lệnh chuyển alias về phiên bản trước.",
+      "score": 0.32692307,
+      "retrieval_mode": "hybrid"
+    },
+    {
+      "doc_id": "it-j2-doc-755d27b7",
+      "title": "Tài liệu lặp lại 755d27b7",
+      "snippet": "Tài liệu 755d27b7 được gửi nhiều lần để chứng minh việc lập chỉ mục là idempotent trong kho vector.",
+      "score": 0.30882353,
+      "retrieval_mode": "hybrid"
+    }
+  ]
+}

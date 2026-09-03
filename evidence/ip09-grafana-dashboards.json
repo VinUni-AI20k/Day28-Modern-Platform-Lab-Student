@@ -1,0 +1,16 @@
+{
+  "grafana_url": "http://localhost:3000",
+  "dashboards": [
+    {
+      "title": "Lab 28 Platform Overview",
+      "uid": "lab28-platform",
+      "url": "/d/lab28-platform/lab-28-platform-overview"
+    }
+  ],
+  "datasources": [
+    {
+      "name": "Prometheus",
+      "type": "prometheus"
+    }
+  ]
+}
