@@ -1,0 +1,9 @@
+{
+  "reachable": false,
+  "version": null,
+  "served_models": [],
+  "vllm_metric_names": [],
+  "vllm_metric_count": 0,
+  "is_real_vllm": false,
+  "detail": "unreachable: ConnectError"
+}
