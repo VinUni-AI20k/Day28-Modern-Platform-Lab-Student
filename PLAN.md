@@ -7,6 +7,22 @@ Nguồn: [README.md](README.md), [LAB28.md](LAB28.md), [LAB28_GUIDE.md](LAB28_GU
 
 ---
 
+## Trạng thái thực thi (cập nhật 2026-09-03)
+
+| Phase | Trạng thái | Ghi chú |
+|---|---|---|
+| 0 — Chuẩn bị môi trường | ✅ Xong | |
+| 1 — 4 hàm boundary | ✅ Xong | commit `2983852` trên `ca-nhan-thai` |
+| 2 — Kiểm tra Compose | ✅ Xong | |
+| 3 — Core stack | ✅ Xong, đang chạy | 12 container healthy, `/ready` = `degraded` (đúng dự kiến) |
+| 4 — Full profile (Airflow/Spark) | ❌ **Không khả thi trên máy này** | Thử 2 lần, cả 2 lần OOM-kill `kafka`; xem mục "Kết quả thực tế Phase 4" |
+| 5 — vLLM GPU | ⏸ Chưa làm | Độc lập với Phase 4, có thể làm bất cứ lúc nào có endpoint GPU |
+| 6 — Evidence/load test | 🟡 Một phần | 4/10 evidence + 2 lần load test; 6 evidence còn lại bị chặn bởi Phase 4/5 |
+
+Core stack hiện đang chạy trên máy (branch `ca-nhan-thai`, chưa merge). Xem chi tiết nguyên nhân từng phase bên dưới.
+
+---
+
 ## 0. Hiện trạng đã kiểm chứng (2026-09-03)
 
 | Hạng mục | Kết quả | Ảnh hưởng |
@@ -47,10 +63,10 @@ uv run pytest starter-tests -q
 
 **Đạt khi:**
 
-- [ ] `git status` hiển thị branch `ca-nhan-thai`, chưa có file bị sửa.
-- [ ] `lab28 --help` liệt kê `preflight`, `topics`, `seed`, `ready`.
-- [ ] `preflight` in `profile`, `python=3.11.x`, `docker_daemon`, `memory_gib`, `next`.
-- [ ] `pytest starter-tests -q` → **đúng 4 failed**, tất cả là `NotImplementedError`.
+- [x] `git status` hiển thị branch `ca-nhan-thai`, chưa có file bị sửa.
+- [x] `lab28 --help` liệt kê `preflight`, `topics`, `seed`, `ready`.
+- [x] `preflight` in `profile`, `python=3.11.x`, `docker_daemon`, `memory_gib`, `next`.
+- [x] `pytest starter-tests -q` → **đúng 4 failed**, tất cả là `NotImplementedError`.
 
 Lưu output của lần chạy 4-fail này (baseline "trước khi làm") — dùng khi trình bày.
 
@@ -85,7 +101,7 @@ starter-test vẫn xanh.
 ```text
 uv run pytest starter-tests/test_integration_tasks.py -k event_headers -q
 ```
-- [ ] `1 passed, 3 deselected`
+- [x] `1 passed, 3 deselected`
 
 ### B. `dedupe_latest` — chống trùng khi Kafka replay
 
@@ -110,8 +126,8 @@ Bẫy: `tests/test_delta_merge_idempotency.py` khó hơn starter-test. Nó tạo
 uv run pytest starter-tests/test_integration_tasks.py -k delta_source -q
 uv run pytest tests/test_delta_merge_idempotency.py -q
 ```
-- [ ] Cả hai lệnh đều xanh. Nếu lệnh đầu xanh mà lệnh sau đỏ → chưa xử lý đúng
-      đối tượng `IngestionEvent`.
+- [x] Cả hai lệnh đều xanh (22 test trong `test_delta_merge_idempotency.py`). Nếu
+      lệnh đầu xanh mà lệnh sau đỏ → chưa xử lý đúng đối tượng `IngestionEvent`.
 
 ### C. `feast_online_request` — hợp đồng với Feast
 
@@ -127,7 +143,7 @@ Yêu cầu:
 ```text
 uv run pytest starter-tests/test_integration_tasks.py -k feast_request -q
 ```
-- [ ] `1 passed, 3 deselected`
+- [x] `1 passed, 3 deselected`
 
 ### D. `readiness_status` — ready / degraded / not_ready
 
@@ -143,7 +159,7 @@ một lần rồi mới kết luận (materialize hoặc gom cờ trong một v�
 ```text
 uv run pytest starter-tests/test_integration_tasks.py -k readiness -q
 ```
-- [ ] `1 passed, 3 deselected`
+- [x] `1 passed, 3 deselected`
 
 ### Cổng chặn cuối Phase 1
 
@@ -155,9 +171,10 @@ uv run python scripts/check_portability.py
 uv run python scripts/validate_manifests.py
 ```
 
-- [ ] Không còn `NotImplementedError`;
-- [ ] cả 5 lệnh exit code `0`;
-- [ ] commit mốc 1: `feat: implement four integration boundaries (IP01/03/04/07-08)`.
+- [x] Không còn `NotImplementedError`;
+- [x] cả 5 lệnh exit code `0` (87 test pass, ruff sạch);
+- [x] commit mốc 1: `feat: implement four integration boundaries (IP01/03/04/07-08)`
+      → `2983852` trên `ca-nhan-thai`.
 
 **Chưa đạt thì chưa động tới Docker.**
 
@@ -173,10 +190,9 @@ docker compose --env-file ports.template --profile full config --quiet
 Cổng cần trống: 8080 (gateway), 8000 (API), 3000 (Grafana), 9090 (Prometheus),
 5000 (MLflow), 8001 (vLLM), 8082 (Airflow), 16686 (Jaeger), 6333 (Qdrant).
 
-- [ ] Cả hai lệnh im lặng và trả `0`.
-- [ ] Nếu trùng cổng: copy `ports.template` → `ports.local`, đổi **chỉ số cổng**,
-      rồi dùng `--env-file ports.local` cho *mọi* lệnh sau đó. Không đưa token/
-      mật khẩu/URL bí mật vào file này.
+- [x] Cả hai lệnh im lặng và trả `0`.
+- [x] Không trùng cổng — 9 cổng cần dùng đều trống (`Get-NetTCPConnection`), không
+      cần tạo `ports.local`.
 
 ---
 
@@ -202,16 +218,42 @@ uv run lab28 ready
 
 **Đạt khi:**
 
-- [ ] `ps`: các service `running`/`healthy`;
-- [ ] `topics`: topic `created` hoặc `exists`;
-- [ ] `index`: `points_upserted > 0`;
-- [ ] `release`: có MLflow version + alias `champion`;
-- [ ] `seed`: documents/feedback `accepted`, không có `rejected`;
-- [ ] `ready`: `ready` **hoặc** `degraded`. `not_ready` phải điều tra bằng
-      `lab28 ready` → tìm component lỗi → `docker compose ... logs <service>`.
+- [x] `ps`: các service `running`/`healthy`;
+- [x] `topics`: topic `created` hoặc `exists`;
+- [x] `index`: `points_upserted > 0` (13);
+- [x] `release`: có MLflow version + alias `champion` (`lab28-rag-release v2`);
+- [x] `seed`: documents/feedback `accepted`, không có `rejected` (sau khi gửi bù —
+      xem "Kết quả thực tế" bên dưới);
+- [x] `ready`: `degraded` (đúng dự kiến, thiếu vLLM).
 
 `degraded` vì chưa nối vLLM thật là **trạng thái đã dự kiến**, không phải lý do
 để dựng server vLLM giả (rubric: làm giả = 0 điểm phần đó).
+
+### Kết quả thực tế Phase 3 — 4 vấn đề gặp phải và cách xử lý
+
+1. **Build song song bị lỗi containerd race.** `docker compose up --build` lỗi
+   `image "...-feast:latest": already exists` khi build `feast` + `api` cùng lúc.
+   Xử lý: build từng service riêng (`docker compose build api`, rồi `feast`) trước
+   khi `up -d --wait` (không cần `--build` nữa vì image đã sẵn).
+2. **MLflow crash trên console Windows.** `lab28 release` crash với
+   `UnicodeEncodeError` vì MLflow in emoji (`🏃`) mà console Windows mặc định
+   dùng codepage `cp1252`. Model version 1 vẫn được tạo trước khi crash — chạy
+   lại lệnh (tạo thêm version 2) với `PYTHONIOENCODING=utf-8` set trước mọi lệnh
+   `uv run lab28 ...` để tránh lặp lại.
+3. **`seed --via-gateway` báo `rejected` do rate-limit, không phải lỗi code.**
+   Envoy giới hạn `10 tokens/s` dùng chung cho **toàn bộ route** (`gateway/envoy.yaml:45-48`),
+   áp dụng cho cả 25 request (13 doc + 12 feedback) gửi gần như đồng thời. 4/12
+   feedback (asker-005, asker-006) bị `429`. Đây chính là bằng chứng cần cho
+   IP08 (`evidence/ip08-gateway.json` cần cả `200` và `429`), không phải bug. Đã
+   gửi bù 4 bản ghi còn thiếu với giãn cách ~1.1s/request để đủ 25/25 vào Delta/Feast.
+4. **`lab28 ready` chạy trên host báo `not_ready`, chạy trong container báo
+   `degraded`.** Container `api` có `LAB28_VLLM_REQUIRE_REAL=false` mặc định
+   (`compose.yaml:226`), host shell thì không → mặc định `true`
+   (`settings.py:200`) → vLLM probe thành `mandatory=True` → `not_ready`. Xác
+   nhận qua `curl http://localhost:8000/ready` (endpoint thật) trả đúng
+   `degraded`. Set `LAB28_VLLM_REQUIRE_REAL=false` khi chạy `lab28 ready` từ host
+   để khớp hành vi container. **`readiness_status` ở Phase 1 không có lỗi** —
+   đây thuần túy là khác biệt biến môi trường.
 
 ### Thu bằng chứng UI ngay tại phase này
 
@@ -225,11 +267,15 @@ uv run lab28 ready
 | MLflow | http://localhost:5000 | IP06 champion |
 | Qdrant | http://localhost:6333/dashboard | IP05 points > 0 |
 
-- [ ] Commit mốc 2 (chỉ code/cấu hình, **không commit** `.lab28/`, DB, cache, weights).
+- [x] 7/7 UI endpoint trả `200`. Prometheus targets: 9/10 `up` (chỉ
+      `lab28-vllm-optional` `down`, đúng dự kiến).
+- [ ] Commit mốc 2 — **bỏ qua**: Phase 3 không tạo thay đổi trong repo (state
+      runtime nằm trong Docker volume, đúng thiết kế `.gitignore`). `git status`
+      vẫn sạch sau Phase 3.
 
 ---
 
-## Phase 4 — Full data/ML: J1–J5 (rủi ro cao trên máy này)
+## Phase 4 — Full data/ML: J1–J5 — ❌ ĐÃ THỬ, KHÔNG KHẢ THI TRÊN MÁY NÀY
 
 ```text
 docker compose --env-file ports.template --profile full up -d --build --wait
@@ -255,6 +301,36 @@ từng task với Delta, Feast, Qdrant, MLflow.
 hạ tầng giảng viên. README cho phép đúng đường này: Bước 1–6 tại máy cá nhân,
 Bước 7–9 trên hệ thống chung.
 
+### Kết quả thực tế — 2 lần thử, cả 2 lần OOM
+
+**RAM host chỉ 7.7 GiB, và Docker Desktop giới hạn WSL2 VM ở ~3.68 GiB** (khoảng
+50% RAM host theo mặc định) — không phải 7.7 GiB đầy đủ như kỳ vọng ban đầu. Core
+stack một mình đã dùng ~2.4–2.5 GiB trong giới hạn đó, chỉ còn ~1.2 GiB đệm.
+
+**Lần 1 — `--profile full` (spark-connect + airflow):**
+- Build phải tách riêng từng service (`docker compose build airflow`) vì lặp lại
+  đúng lỗi containerd race đã gặp ở Phase 3.
+- 11/13 container lên `healthy`; `airflow` kẹt "starting" hơn 26 phút.
+- Docker daemon bắt đầu trả `502 Bad Gateway`, rồi **`spark-connect` bị kill
+  (exit 137 = SIGKILL/OOM)**, sau đó **`kafka` cũng bị kill** — OOM lan sang cả
+  core stack đang chạy tốt.
+- Xử lý: `docker compose stop airflow spark-connect`, `docker compose start kafka`
+  → core stack khôi phục hoàn toàn (`/ready` lại `degraded` như cũ).
+
+**Lần 2 — chỉ `airflow` một mình (không kèm `spark-connect`), theo yêu cầu thử lại
+có kiểm soát hơn:**
+- Docker daemon treo **~5 phút** không phản hồi cả `docker ps` trần trụi (không
+  qua compose) — nặng hơn lần 1.
+- `airflow` chạy 46 phút vẫn `unhealthy`, không bao giờ qua nổi health check.
+- **`kafka` lại bị OOM-kill (exit 137) lần thứ hai.**
+- Người dùng yêu cầu dừng airflow hẳn (`không chạy airflow nữa`) — đã dừng
+  container, khởi động lại `kafka`, xác nhận core stack khôi phục.
+
+**Kết luận: không thử chạy Airflow trên máy này nữa dưới bất kỳ hình thức nào**
+(kể cả một mình, không kèm Spark). Phase 4 (J1–J5, và evidence IP01–04) bắt buộc
+chuyển sang máy chung/hạ tầng giảng viên có RAM đủ 12–16 GiB như README khuyến
+nghị.
+
 ---
 
 ## Phase 5 — vLLM thật cho IP07 (tùy chọn, cần GPU)
@@ -274,7 +350,7 @@ quota session, rủi ro tunnel public, cold start do tải model, tensor paralle
 
 ---
 
-## Phase 6 — Evidence, load test, demo, nộp bài
+## Phase 6 — Evidence, load test, demo, nộp bài — 🟡 Một phần (chờ Phase 4/5)
 
 ```text
 uv run lab28 evidence
@@ -286,6 +362,67 @@ uv run python load-tests/run_profile.py --requests 200 --workers 16
 Ghi kèm số đo: P50/P95/P99, CPU/RAM của API, Kafka lag, error rate, **cấu hình
 phần cứng, model, dataset, concurrency, warm-up** (theo `runbooks/performance.md`).
 Không suy ra capacity production từ laptop.
+
+### Kết quả thực tế — 4/10 evidence, `lab28 integration` score 67
+
+- [x] `evidence/ip05-qdrant-search.json`, `ip06-mlflow-release.json`,
+      `ip07-vllm-identity.json` (nội dung `unreachable` — trung thực, chưa nối
+      vLLM), `integration-report.json` — 4 file `lab28 evidence` tự sinh được từ
+      chính process CLI, không cần Airflow.
+- [x] `lab28 integration`: **4/6 verified `ready`** (IP01, IP04, IP05, IP06),
+      IP03/IP07 `not_ready` (đúng dự kiến), IP02/IP08/IP09/IP10 `unverified`,
+      score `67`.
+- [x] Load test `run_profile.py` (nhắm `/ready` qua gateway): 8 workers →
+      67/200 `200`; 16 workers → 19/200 `200`, phần còn lại bị `429` (Envoy
+      rate-limit 10 req/s là bottleneck chi phối, không phải backend — tăng
+      worker chỉ làm tỷ lệ từ chối cao hơn). P50 ~9–10ms, P95/P99 800–1300ms.
+      **Lưu ý khi viết báo cáo:** script gộp mọi lỗi (kể cả `429`) vào bucket
+      `"0"` do `except Exception: status = 0` chung — không tách được số `429`
+      thật từ status_counts, cần nêu rõ giới hạn này trong phần bottleneck
+      analysis thay vì trích số liệu như thể đó là lỗi kết nối.
+- [ ] 6 evidence còn lại (`ip01`, `ip02`, `ip03`, `ip04-feast-online`, `ip08`,
+      `ip09` × 2, `ip10`) — không lấy được, lý do **không phải lỗi code**:
+
+  **`integration-tests/conftest.py` có fixture `stack_is_up` (`autouse=True`,
+  `scope="session"`)** chặn *toàn bộ* suite nếu Airflow không reachable — kể cả
+  test không đụng tới Airflow (`test_gateway_rate_limit.py` cho IP08,
+  `test_prometheus_targets.py` cho IP09). Đây là thiết kế có chủ đích ("never
+  skips itself into a false green"), không phải bug.
+
+  | Nhóm nguyên nhân | IP | Cách gỡ |
+  |---|---|---|
+  | Cần Airflow **chạy pipeline thật** (không chỉ sống) | IP01, IP02, IP03, IP04 | Phase 4 trên máy đủ RAM |
+  | Chặn lây bởi gate `stack_is_up` dù bản thân không cần pipeline | IP08, IP09 | Gỡ được ngay khi Airflow chỉ cần *healthy* (nhẹ hơn IP01-04) |
+  | Cần Airflow **+** vLLM thật cùng lúc (span coverage đủ 11 span) | IP10 (test mang marker `gpu`, không phải `langsmith`) | Phase 4 **+** Phase 5 |
+  | Cần vLLM thật, độc lập hoàn toàn với Airflow | IP07 | Phase 5 — làm được ngay, không chờ Phase 4 |
+  | Cần credential ngoài do giảng viên cấp | Nhánh LangSmith của IP10 (`test_the_langsmith_export_leg_is_configured_and_healthy`, không ghi `ip10-trace.json`) | Không phải lỗi của sinh viên — báo `UNVERIFIED` là **đúng theo rubric** (`gate_note` trong `integration-matrix.yaml` + `SUBMISSION.md` nói rõ điều này) |
+
+### `evidence/` có nên bỏ khỏi `.gitignore` không? — **Có, đã sửa**
+
+Kết luận trước đó (giữ nguyên, nộp evidence qua kênh riêng) chỉ đúng nếu có nơi
+đính kèm tách biệt khỏi repo. **Thực tế: kênh nộp bài chỉ nhận link repo, không
+có chỗ đính kèm riêng** — nên nếu `evidence/` vẫn bị `.gitignore`, 10 file bằng
+chứng bắt buộc trong `SUBMISSION.md` (mục 2) sẽ **không bao giờ tới tay người
+chấm**. Đây là ràng buộc thực tế quan trọng hơn suy luận lý thuyết từ tài liệu.
+
+Đã sửa `.gitignore`: bỏ dòng `evidence/`, giữ nguyên `.venv/`, `.lab28/`,
+`__pycache__/`, `*.pyc`, `.pytest_cache/`, `.ruff_cache/`, `readiness-report.json`
+— các mục này vẫn phải ở ngoài Git vì là DB/cache/venv thật sự (Quy tắc #3 trong
+README: không đưa dữ liệu tạm, cơ sở dữ liệu, bộ nhớ đệm lên Git), khác bản chất
+với evidence — evidence là **deliverable bắt buộc** theo `SUBMISSION.md`, không
+phải state tạm.
+
+**Quy trình commit evidence — làm ở cuối, không làm giữa chừng:**
+
+1. Không commit ngay bây giờ — hiện chỉ có 4/10 file, và `ip07-vllm-identity.json`
+   đang phản ánh trạng thái *chưa nối vLLM* (đúng nhưng chưa hoàn chỉnh).
+2. Sau khi Phase 4 (Airflow trên máy chung) và Phase 5 (vLLM GPU) xong, chạy lại
+   **toàn bộ** `lab28 evidence` một lần cuối để có bản mới nhất, khớp với đúng
+   run/trace/model ID sẽ trình bày khi demo.
+3. Commit đúng một lần ở bước đó — tránh nhiều commit evidence rải rác qua các
+   lần chạy thử nghiệm, giữ lịch sử Git sạch và bản cuối luôn là bản live thật.
+4. Vẫn tuyệt đối không sửa tay nội dung JSON trong `evidence/` — mọi thay đổi
+   phải đến từ chạy lại `lab28 evidence`/`pytest integration-tests`.
 
 ### Bản đồ 10 điểm kết nối → file bằng chứng
 
@@ -354,6 +491,12 @@ local tương ứng. Khai trung thực vẫn được chấm; làm giả bị 0 
 | Port đã bị chiếm | `port is already allocated` | `ports.local` + `--env-file ports.local` |
 | Container `unhealthy` | Thiếu RAM hoặc dependency chưa sẵn sàng | `docker compose ... logs <service>`, sửa lỗi **xuất hiện đầu tiên** |
 | Mất state khi demo recovery | — | Dùng `down --remove-orphans`, **tuyệt đối không** `down -v` / `lab28 reset --yes` trong lúc demo |
+| `docker compose up --build` lỗi containerd race | `image "...:latest": already exists` khi export | Build từng service riêng (`docker compose build <service>`) trước khi `up -d --wait` |
+| `lab28 release` crash `UnicodeEncodeError` | MLflow in emoji, console Windows dùng `cp1252` | `PYTHONIOENCODING=utf-8` trước mọi lệnh `uv run lab28 ...` |
+| `seed --via-gateway` báo `rejected` (`429`) | Envoy rate-limit `10 tokens/s` dùng chung toàn route (`gateway/envoy.yaml:45-48`), 25 request gửi gần như đồng thời | Đây là bằng chứng IP08 cần có, không phải bug; gửi bù phần thiếu có giãn cách ~1.1s/request |
+| `lab28 ready` (host) báo `not_ready`, container báo `degraded` | Container `api` có `LAB28_VLLM_REQUIRE_REAL=false` mặc định, host shell thì không (`settings.py:200` default `true`) | `LAB28_VLLM_REQUIRE_REAL=false` khi chạy CLI từ host, hoặc tin `/ready` thật qua HTTP thay vì CLI |
+| `integration-tests` báo lỗi dù test không cần Airflow | `stack_is_up` fixture (`conftest.py`, `autouse`, `session`) chặn toàn bộ suite nếu Airflow không reachable | Không có cách né hợp lệ — chờ Phase 4 |
+| Airflow OOM-kill `kafka` dù chạy một mình | WSL2 VM giới hạn ~3.68 GiB (không phải RAM host đầy đủ), Airflow cần nhiều RAM hơn mức đệm còn lại | Không thử lại trên máy 7.7 GiB — chuyển máy chung |
 
 ---
 
