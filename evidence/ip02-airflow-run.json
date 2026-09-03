@@ -1,0 +1,38 @@
+{
+  "dag_id": "lab28_ingestion_pipeline",
+  "dag_run_id": "manual__2026-09-03T12:32:00+00:00",
+  "state": "success",
+  "conf": {},
+  "task_instances": [
+    {
+      "task_id": "consume_kafka",
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "spark_delta_merge",
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "materialize_feast",
+      "state": "success",
+      "try_number": 1
+    },
+    {
+      "task_id": "publish_processed_event",
+      "state": "success",
+      "try_number": 1
+    }
+  ],
+  "asset_events": [
+    {
+      "uri": "lab28://delta/feedback",
+      "timestamp": "2026-09-03T12:32:30Z"
+    },
+    {
+      "uri": "lab28://delta/documents",
+      "timestamp": "2026-09-03T12:32:30Z"
+    }
+  ]
+}

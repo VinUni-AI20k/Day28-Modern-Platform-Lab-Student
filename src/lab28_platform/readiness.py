@@ -90,7 +90,7 @@ def probe_kafka(settings: Settings) -> Probe:
     from lab28_platform.event_bus import broker_metadata
 
     try:
-        metadata = broker_metadata(settings.kafka, timeout=3.0)
+        metadata = broker_metadata(settings.kafka, timeout=6.0)
     except Exception as error:
         return _unavailable("kafka", error)
 

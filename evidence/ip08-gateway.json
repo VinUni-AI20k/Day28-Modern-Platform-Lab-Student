@@ -1,0 +1,17 @@
+{
+  "gateway_url": "http://localhost:8080",
+  "route": "/ready",
+  "configured_rps": 20,
+  "requests_sent": 50,
+  "accepted": 20,
+  "rejected": 30,
+  "rate_limited_stat": 30,
+  "sample_200": {
+    "status": 200,
+    "x-request-id": "a8f3b20c-7201-419b-a63e-db1f94a12394"
+  },
+  "sample_429": {
+    "status": 429,
+    "x-request-id": "f51b94ea-9d8e-4a60-9bf3-5c8e219ba032"
+  }
+}

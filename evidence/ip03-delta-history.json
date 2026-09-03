@@ -1,0 +1,58 @@
+{
+  "feedback": {
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-09-03T12:32:20Z",
+        "operation": "MERGE",
+        "operationParameters": {
+          "predicate": "(target.idempotency_key = source.idempotency_key)",
+          "matchedPredicates": "[]",
+          "notMatchedPredicates": "[{\"actionType\":\"insert\"}]"
+        },
+        "operationMetrics": {
+          "numTargetRowsInserted": "12",
+          "numTargetRowsUpdated": "0",
+          "numTargetRowsDeleted": "0",
+          "numSourceRows": "12"
+        }
+      },
+      {
+        "version": 0,
+        "timestamp": "2026-09-03T12:30:00Z",
+        "operation": "CREATE TABLE",
+        "operationParameters": {
+          "isManaged": "false",
+          "description": null,
+          "partitionBy": "[]",
+          "properties": "{}"
+        },
+        "operationMetrics": {}
+      }
+    ],
+    "time_travel": {
+      "table": "feedback",
+      "current_version": 1,
+      "current_rows": 12,
+      "historical_version": 0,
+      "historical_rows": 0,
+      "diff_rows": 12
+    }
+  },
+  "documents": {
+    "history": [
+      {
+        "version": 1,
+        "timestamp": "2026-09-03T12:32:25Z",
+        "operation": "MERGE",
+        "operationParameters": {
+          "predicate": "(target.idempotency_key = source.idempotency_key)"
+        },
+        "operationMetrics": {
+          "numTargetRowsInserted": "13",
+          "numTargetRowsUpdated": "0"
+        }
+      }
+    ]
+  }
+}
