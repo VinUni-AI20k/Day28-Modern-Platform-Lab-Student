@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 
 def percentile(values: list[float], quantile: float) -> float:
@@ -25,9 +27,36 @@ def request(url: str) -> tuple[float, int]:
     return (time.perf_counter() - started) * 1000, status
 
 
+def default_gateway_url() -> str:
+    if "LAB28_GATEWAY_URL" in os.environ:
+        return os.environ["LAB28_GATEWAY_URL"]
+    if "LAB28_GATEWAY_PORT" in os.environ:
+        return f"http://localhost:{os.environ['LAB28_GATEWAY_PORT']}"
+    for env_path in (Path(".env"), Path("/tmp/lab28-ports.local")):
+        if env_path.is_file():
+            try:
+                for line in env_path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if line.startswith("LAB28_GATEWAY_URL="):
+                        return line.split("=", 1)[1].strip().strip("'\"")
+                    if line.startswith("LAB28_GATEWAY_PORT="):
+                        port = line.split("=", 1)[1].strip().strip("'\"")
+                        return f"http://localhost:{port}"
+            except Exception:
+                pass
+    for candidate in ("http://localhost:8080", "http://localhost:18080"):
+        try:
+            with urllib.request.urlopen(f"{candidate}/ready", timeout=1.0) as r:
+                if r.status in (200, 429):
+                    return candidate
+        except Exception:
+            pass
+    return "http://localhost:8080"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--url", default="http://localhost:8080")
+    parser.add_argument("--url", default=default_gateway_url())
     parser.add_argument("--requests", type=int, default=100)
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args()

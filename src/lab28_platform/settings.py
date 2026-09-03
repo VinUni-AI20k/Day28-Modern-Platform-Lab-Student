@@ -19,6 +19,24 @@ from lab28_platform.contracts import (
 )
 
 
+def _load_env_files() -> None:
+    for path in (Path(".env"), Path("/tmp/lab28-ports.local")):
+        if path.is_file():
+            try:
+                for line in path.read_text(encoding="utf-8").splitlines():
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        k, v = k.strip(), v.strip().strip("'\"")
+                        if k not in os.environ:
+                            os.environ[k] = v
+            except Exception:
+                pass
+
+
+_load_env_files()
+
+
 def _env(name: str, default: str) -> str:
     return os.getenv(name, default)
 
@@ -163,8 +181,9 @@ class MLflowSettings:
 
     @classmethod
     def from_env(cls) -> MLflowSettings:
+        mlflow_port = _env("LAB28_MLFLOW_PORT", "5000")
         return cls(
-            tracking_uri=_env("MLFLOW_TRACKING_URI", "http://localhost:5000"),
+            tracking_uri=_env("MLFLOW_TRACKING_URI", f"http://localhost:{mlflow_port}"),
             model_name=_env("LAB28_MODEL_NAME", "lab28-rag-release"),
             alias=_env("LAB28_MODEL_ALIAS", "champion"),
             experiment=_env("LAB28_MLFLOW_EXPERIMENT", "lab28-platform"),
@@ -288,11 +307,13 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> Settings:
+        gateway_port = _env("LAB28_GATEWAY_PORT", "8080")
+        api_port = _env("LAB28_API_PORT", "8000")
         return cls(
             runtime_dir=Path(_env("LAB28_RUNTIME_DIR", ".lab28")).expanduser().resolve(),
             delta_root=_env("LAB28_DELTA_ROOT", ".lab28/delta"),
-            gateway_url=_env("LAB28_GATEWAY_URL", "http://localhost:8080"),
-            api_url=_env("LAB28_API_URL", "http://localhost:8000"),
+            gateway_url=_env("LAB28_GATEWAY_URL", f"http://localhost:{gateway_port}"),
+            api_url=_env("LAB28_API_URL", f"http://localhost:{api_port}"),
             pushgateway_url=_env("LAB28_PUSHGATEWAY_URL", "http://localhost:9091"),
             spark_remote=_env("LAB28_SPARK_REMOTE", "sc://localhost:15002"),
             kafka=KafkaSettings.from_env(),

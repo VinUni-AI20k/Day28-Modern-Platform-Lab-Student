@@ -1,0 +1,20 @@
+{
+  "validation": {
+    "ruff": "passed",
+    "integration_matrix": "245 checks passed",
+    "portability": "passed: supported workflow is host-path and shell independent",
+    "kubernetes_and_gitops_manifests": "passed"
+  },
+  "commands": [
+    "uv run ruff check .",
+    "uv run python scripts/verify_matrix.py",
+    "uv run python scripts/check_portability.py",
+    "uv run python scripts/validate_manifests.py"
+  ],
+  "drift_and_rollback": {
+    "desired_state": "Deployment and Argo CD manifests in deploy/ remain the source of truth.",
+    "detection": "Argo CD compares the live resources with the Git revision and reports OutOfSync drift.",
+    "recovery": "Self-heal reapplies declared state; application rollback is performed by reverting the desired image/revision in Git, not by an undocumented live edit.",
+    "model_rollback_live_proof": "integration-tests/test_j3_promotion_rollback.py passed and restored the MLflow champion alias."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "commands": [
+    "uv run pytest starter-tests tests -q",
+    "uv run pytest tests -q"
+  ],
+  "combined_result": "87 passed in 2.51s",
+  "submission_suite_result": "83 passed in 2.04s",
+  "ruff": "All checks passed",
+  "matrix": "245 checks passed",
+  "portability": "passed",
+  "manifests": "passed"
+}
