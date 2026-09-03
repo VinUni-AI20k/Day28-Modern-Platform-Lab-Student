@@ -1,0 +1,26 @@
+{
+  "dashboards": [
+    {
+      "name": "lab28-golden-signals",
+      "uid": "lab28-signals",
+      "panels": 6,
+      "signals": [
+        "traffic",
+        "errors",
+        "latency",
+        "saturation"
+      ]
+    },
+    {
+      "name": "lab28-kafka-pipeline",
+      "uid": "lab28-kafka",
+      "panels": 4,
+      "signals": [
+        "consumer_lag",
+        "broker_health",
+        "bytes_in",
+        "bytes_out"
+      ]
+    }
+  ]
+}

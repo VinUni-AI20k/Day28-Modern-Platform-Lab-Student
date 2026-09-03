@@ -1,0 +1,30 @@
+{
+  "topic": "data.raw",
+  "key": "asker-001",
+  "partition": 0,
+  "offset": 0,
+  "headers": [
+    [
+      "traceparent",
+      "00-3343c70512dc5f8d2adad1bf61b2ae3f-914b0df222eb707b-01"
+    ],
+    [
+      "idempotency-key",
+      "fb:asker-001:f3facde79d83f95f289b379395909a13"
+    ]
+  ],
+  "trace_id": "3343c70512dc5f8d2adad1bf61b2ae3f",
+  "value": {
+    "schema_version": "1",
+    "event_id": "304b703ba37b44af80c34c12e25655e9",
+    "idempotency_key": "fb:asker-001:f3facde79d83f95f289b379395909a13",
+    "entity_id": "asker-001",
+    "occurred_at": "2026-09-03T12:32:00Z",
+    "payload": {
+      "kind": "feedback",
+      "asker_id": "asker-001",
+      "text": "Dịch vụ phản hồi nhanh và chính xác.",
+      "rating": 5
+    }
+  }
+}

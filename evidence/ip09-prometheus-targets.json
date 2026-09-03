@@ -1,0 +1,63 @@
+{
+  "targets": [
+    {
+      "job": "api",
+      "url": "http://api:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    },
+    {
+      "job": "gateway",
+      "url": "http://gateway:9901/stats/prometheus",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    },
+    {
+      "job": "kafka-exporter",
+      "url": "http://kafka-exporter:9308/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    },
+    {
+      "job": "qdrant",
+      "url": "http://qdrant:6333/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    },
+    {
+      "job": "feast",
+      "url": "http://feast:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    },
+    {
+      "job": "otel-collector",
+      "url": "http://otel-collector:8889/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T12:35:00Z",
+      "last_error": ""
+    }
+  ],
+  "rules": [
+    {
+      "name": "Lab28HighErrorRate",
+      "state": "inactive",
+      "health": "ok"
+    },
+    {
+      "name": "Lab28HighLatency",
+      "state": "inactive",
+      "health": "ok"
+    },
+    {
+      "name": "Lab28ConsumerLagHigh",
+      "state": "inactive",
+      "health": "ok"
+    }
+  ]
+}

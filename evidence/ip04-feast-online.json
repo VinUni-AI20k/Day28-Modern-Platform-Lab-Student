@@ -1,0 +1,21 @@
+{
+  "entity": {
+    "asker_id": "asker-001"
+  },
+  "feature_service": "asker_serving_v1",
+  "features": {
+    "feedback_count": 2,
+    "avg_rating": 4.5,
+    "negative_ratio": 0.0,
+    "delta_version": 1
+  },
+  "statuses": {
+    "feedback_count": "PRESENT",
+    "avg_rating": "PRESENT",
+    "negative_ratio": "PRESENT",
+    "delta_version": "PRESENT"
+  },
+  "degraded": false,
+  "freshness_seconds": 15.2,
+  "lookup_ms": 2.4
+}

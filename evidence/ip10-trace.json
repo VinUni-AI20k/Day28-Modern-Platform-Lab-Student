@@ -1,0 +1,41 @@
+{
+  "trace_id": "3343c70512dc5f8d2adad1bf61b2ae3f",
+  "traceparent": "00-3343c70512dc5f8d2adad1bf61b2ae3f-914b0df222eb707b-01",
+  "dag_run_id": "manual__2026-09-03T12:32:00+00:00",
+  "span_count": 11,
+  "span_names": [
+    "lab28.airflow.dag",
+    "lab28.api.ask",
+    "lab28.api.ingest",
+    "lab28.feast.get_online_features",
+    "lab28.gateway.request",
+    "lab28.kafka.consume",
+    "lab28.kafka.produce",
+    "lab28.mlflow.resolve_release",
+    "lab28.qdrant.query",
+    "lab28.spark.delta_merge",
+    "lab28.vllm.chat_completion"
+  ],
+  "services": [
+    "lab28-airflow",
+    "lab28-api",
+    "lab28-feast",
+    "lab28-gateway",
+    "lab28-qdrant",
+    "lab28-spark"
+  ],
+  "required_spans_present": [
+    "lab28.airflow.dag",
+    "lab28.api.ask",
+    "lab28.api.ingest",
+    "lab28.feast.get_online_features",
+    "lab28.gateway.request",
+    "lab28.kafka.consume",
+    "lab28.kafka.produce",
+    "lab28.mlflow.resolve_release",
+    "lab28.qdrant.query",
+    "lab28.spark.delta_merge",
+    "lab28.vllm.chat_completion"
+  ],
+  "required_spans_missing": []
+}
