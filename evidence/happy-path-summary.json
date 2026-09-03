@@ -1,0 +1,20 @@
+{
+  "journey": "IT-J1-golden-path",
+  "dag_run_id": "it-5b27c6b4",
+  "trace_id": "a0fe1abbb4a14171930371ca0c9ce640",
+  "kafka_topic": "data.raw",
+  "kafka_partition": 0,
+  "kafka_offset": 12,
+  "delta_version": 2,
+  "mlflow_model": "lab28-rag-release",
+  "mlflow_version": "2",
+  "mlflow_run_id": "86bde31d0334450bbbde07c2c3680863",
+  "qdrant_points_after_run": 14,
+  "state": "success",
+  "sources": [
+    "evidence/ip01-kafka-consume.json",
+    "evidence/ip02-airflow-run.json",
+    "evidence/ip04-feast-online.json",
+    "evidence/ip06-mlflow-release.json"
+  ]
+}

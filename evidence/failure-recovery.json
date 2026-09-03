@@ -1,0 +1,34 @@
+{
+  "journey": "IT-J4-degraded-recovery",
+  "pytest_result": {
+    "passed": 9,
+    "deselected_gpu": 4,
+    "duration_seconds": 123.56
+  },
+  "dependency_injection": {
+    "feast_outage": "optional dependency produced degraded behavior",
+    "qdrant_outage": "mandatory dependency produced not_ready/fail-closed",
+    "final_state": "returned to the observed baseline with Feast and Qdrant ready"
+  },
+  "poison_message": {
+    "dag_run_id": "it-5608a857",
+    "dag_state": "success",
+    "original_topic": "data.raw",
+    "original_partition": 1,
+    "original_offset": 29,
+    "original_key": "it-j4-poison-eb19311c",
+    "error_category": "validation",
+    "attempts": 1,
+    "failed_at": "2026-09-03T13:21:30.401977Z",
+    "good_row_asker_id": "it-j4-eb19311c",
+    "good_row_count_in_delta": 1
+  },
+  "replay": {
+    "dag_run_id": "it-f169ca12",
+    "dag_state": "success",
+    "asker_id": "it-j4-replay-54bf80c4",
+    "idempotency_key": "fb:it-j4-replay-54bf80c4:319f34203c4afad8fea0cad478ec905a",
+    "row_count_in_delta_after_replay": 1
+  },
+  "no_data_loss": true
+}
