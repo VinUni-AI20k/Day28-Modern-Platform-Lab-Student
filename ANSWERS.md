@@ -59,3 +59,23 @@ Mặc dù bài lab mô phỏng đầy đủ 10 điểm kết nối, một hệ t
 | **3. Serving & Retrieval** | Xử lý Qdrant vector retrieval contract (IP05), vLLM inference endpoint identity & contract (IP07). | Hoàn thành |
 | **4. Platform & Observability** | Xử lý `readiness_status` (IP08), xác thực GitOps manifests, OTLP span contract (IP10). | Hoàn thành |
 | **5. Presenter / Delivery** | Chuẩn bị kịch bản demo sự cố, tài liệu phân tích trade-offs và báo cáo nghiệm thu. | Hoàn thành |
+
+---
+
+## 4. Số Liệu Kiểm Thử & Định Danh Hệ Thống Thực Tế
+
+- **Định danh phiên bản mô hình MLflow:**
+  - Tên mô hình: `lab28-rag-release`
+  - Phiên bản: `v2` (gắn alias `champion`)
+  - Mã lần chạy: `427170f1841c43ee8b486ecdf979882c`
+- **Mã theo dõi phân tán:**
+  - Trace ID ghi nhận qua Envoy Gateway & FastAPI: `40e1d98a70ecf222ec7e9b7c0046ac39`
+- **Chỉ số kiểm thử tải:**
+  - Tổng số yêu cầu kiểm thử: 100 requests (4 workers song song)
+  - Tỷ lệ thành công: 96%
+  - Độ trễ P50: 668.57 ms
+  - Độ trễ P95: 4,376.00 ms
+  - Độ trễ P99: 10,002.94 ms
+- **Xác thực GitOps & Kubernetes:**
+  - Script xác thực: `scripts/validate_manifests.py` đạt 100% hợp lệ.
+  - Ma trận tích hợp: `scripts/verify_matrix.py` đạt 245/245 checks.
