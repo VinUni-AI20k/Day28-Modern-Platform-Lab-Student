@@ -254,14 +254,16 @@ class BatchConsumer:
         self._consumer.subscribe([self._topic])
 
     def poll_batch(
-        self, max_messages: int, *, idle_polls: int = 3, poll_timeout: float = 1.0
+        self, max_messages: int, *, idle_polls: int = 10, poll_timeout: float = 1.0
     ) -> tuple[list[ConsumedMessage], list[DeadLetterEnvelope]]:
         """Poll up to ``max_messages``.
 
         Returns decoded messages and, separately, envelopes for messages whose
         payload could not be validated. Undecodable input is a permanent defect:
         retrying it would loop forever, so it goes straight to the dead-letter
-        list and the offset is allowed to advance.
+        list and the offset is allowed to advance. Ten empty one-second polls
+        leave room for a fresh consumer group to finish assignment before an
+        Airflow run is treated as an empty batch.
         """
         decoded: list[ConsumedMessage] = []
         poison: list[DeadLetterEnvelope] = []
