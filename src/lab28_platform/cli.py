@@ -210,6 +210,8 @@ def seed(
     the only sanctioned producer, so seeding this way exercises validation, the
     idempotency key and the traceparent header exactly as a real client would.
     """
+    import time
+
     import httpx
 
     settings = Settings.from_env()
@@ -226,7 +228,14 @@ def seed(
             selected = rows[:limit] if limit else rows
             accepted[kind], rejected[kind] = [], []
             for row in selected:
-                response = client.post(f"/api/v1/{kind}", json=row)
+                for attempt in range(3):
+                    response = client.post(f"/api/v1/{kind}", json=row)
+                    if response.status_code != 429 or attempt == 2:
+                        break
+                    # The bundled corpus is larger than Envoy's one-second
+                    # token bucket. Wait for the next refill and retry only
+                    # requests that never reached the API.
+                    time.sleep(1.0)
                 target = accepted if response.status_code == 202 else rejected
                 target[kind].append(
                     response.json()
@@ -597,10 +606,14 @@ def evidence(
         }
 
     def qdrant_search() -> Any:
-        store = VectorStore(settings.qdrant)
+        import gc
+
+        from lab28_platform.vector_store import release_embedder_cache
+
+        store: VectorStore | None = VectorStore(settings.qdrant)
         try:
             sources = store.search(question, top_k=5)
-            return {
+            result = {
                 "collection": store.collection,
                 "question": question,
                 "points_total": store.count(),
@@ -608,7 +621,14 @@ def evidence(
                 "results": [source.model_dump(mode="json") for source in sources],
             }
         finally:
-            store.close()
+            if store is not None:
+                store.close()
+            store = None
+            release_embedder_cache()
+            # FastEmbed owns native ONNX sessions. Reclaim them while Python's
+            # runtime is still alive instead of during interpreter teardown.
+            gc.collect()
+        return result
 
     write("ip03-delta-history.json", delta_history)
     write("ip05-qdrant-search.json", qdrant_search)
@@ -629,6 +649,11 @@ def evidence(
     }
     _note(f"{len(outstanding)} evidence file(s) must come from outside this process")
     _emit({"written": written, "failed": failed, "outstanding": outstanding})
+    sys.stdout.flush()
+    sys.stderr.flush()
+    import os
+
+    os._exit(0)
 
 
 def main() -> None:

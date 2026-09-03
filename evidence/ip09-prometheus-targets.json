@@ -1,0 +1,102 @@
+{
+  "targets": [
+    {
+      "job": "lab28-airflow-batch",
+      "url": "http://pushgateway:9091/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:39.488122892Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-api",
+      "url": "http://api:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:40.386915893Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-collector",
+      "url": "http://otel-collector:8888/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:38.891799517Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-feast",
+      "url": "http://feast:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:39.156247194Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-gateway",
+      "url": "http://gateway:9901/stats/prometheus",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:38.103482806Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-kafka",
+      "url": "http://kafka-exporter:9308/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:37.645728066Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-mlflow",
+      "url": "http://api:8000/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:38.996987157Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-prometheus",
+      "url": "http://prometheus:9090/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:37.505965453Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-qdrant",
+      "url": "http://qdrant:6333/metrics",
+      "health": "up",
+      "last_scrape": "2026-09-03T16:18:39.437896089Z",
+      "last_error": ""
+    },
+    {
+      "job": "lab28-vllm-optional",
+      "url": "http://host.docker.internal:8001/metrics",
+      "health": "down",
+      "last_scrape": "2026-09-03T16:18:32.279128478Z",
+      "last_error": "Get \"http://host.docker.internal:8001/metrics\": context deadline exceeded"
+    }
+  ],
+  "rules": [
+    {
+      "name": "Lab28ApiUnavailable",
+      "type": "alerting",
+      "health": "ok",
+      "duration": 30,
+      "labels": {
+        "severity": "critical"
+      },
+      "annotations": {
+        "description": "Check the API container and its Kafka, Qdrant and MLflow dependencies.",
+        "summary": "Lab 28 API is not being scraped"
+      }
+    },
+    {
+      "name": "Lab28HighErrorRatio",
+      "type": "alerting",
+      "health": "ok",
+      "duration": 120,
+      "labels": {
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "Use the trace ID and readiness breakdown to identify the failing boundary.",
+        "summary": "More than 5 percent of Lab 28 requests are failing"
+      }
+    }
+  ]
+}

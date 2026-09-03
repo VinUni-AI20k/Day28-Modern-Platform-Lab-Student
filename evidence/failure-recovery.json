@@ -1,0 +1,32 @@
+{
+  "command": "uv run pytest integration-tests -m \"not gpu and not langsmith\" -q",
+  "result": "56 passed, 16 deselected",
+  "journeys": {
+    "idempotent_replay": {
+      "dedicated_result": "9 passed",
+      "proof": "Replaying the same idempotency key leaves exactly one Delta row and does not duplicate the indexed document."
+    },
+    "promotion_rollback": {
+      "proof": "The suite promoted a new MLflow champion, resolved it through the serving path, and restored the previous champion alias."
+    },
+    "dependency_recovery": {
+      "proof": "The suite stopped optional dependencies, observed explicit degraded readiness/serving evidence, restarted them in a finally block, and verified recovery."
+    },
+    "dlq_replay": {
+      "proof": "A malformed Kafka payload was quarantined in the DLQ; replay refused invalid bytes rather than reinjecting them into data.raw."
+    }
+  },
+  "post_recovery_state": {
+    "kafka_brokers": 1,
+    "declared_topics_present": 4,
+    "feedback_delta_version": 18,
+    "feedback_rows": 28,
+    "document_delta_version": 12,
+    "document_rows": 23,
+    "qdrant_points": 23,
+    "feast_healthy": true,
+    "mlflow_champion_version": "1",
+    "overall_readiness": "degraded",
+    "degraded_only_because": "No real vLLM/GPU endpoint was available."
+  }
+}

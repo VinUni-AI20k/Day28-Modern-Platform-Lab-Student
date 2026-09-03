@@ -123,6 +123,11 @@ def get_embedder(settings: QdrantSettings) -> Embedder:
     return _shared_embedder(settings.embedding_model_id, settings)
 
 
+def release_embedder_cache() -> None:
+    """Release cached ONNX sessions before a short-lived CLI process exits."""
+    _shared_embedder.cache_clear()
+
+
 def source_repo(model_name: str, *, sparse: bool = False) -> str:
     """The HuggingFace repo fastembed downloads for a friendly model name.
 

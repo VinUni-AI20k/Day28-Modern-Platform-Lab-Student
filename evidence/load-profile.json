@@ -1,0 +1,23 @@
+{
+  "command": "LAB28_GATEWAY_URL=http://127.0.0.1:18080 uv run python load-tests/run_profile.py --requests 200 --workers 8",
+  "requests": 200,
+  "workers": 8,
+  "status_counts": {
+    "200": 200
+  },
+  "latency_ms": {
+    "p50": 5281.944667047355,
+    "p95": 5408.368792035617,
+    "p99": 5501.873625034932
+  },
+  "bottleneck": {
+    "component": "vLLM readiness probe",
+    "observation": "A single gateway /ready request took about 5.34 seconds while the configured vLLM endpoint was unreachable.",
+    "analysis": "The readiness handler probes dependencies synchronously. The absent optional vLLM endpoint waits for its connection timeout on every request, so concurrency does not remove the roughly five-second latency floor.",
+    "recommended_actions": [
+      "Cache dependency readiness for a short bounded interval.",
+      "Use a sub-second timeout or circuit breaker for the optional vLLM probe.",
+      "Separate lightweight pod readiness from a deeper dependency diagnostic endpoint."
+    ]
+  }
+}
