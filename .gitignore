@@ -4,5 +4,4 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
-evidence/
 readiness-report.json
