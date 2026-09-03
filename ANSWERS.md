@@ -1,6 +1,6 @@
 # Báo Cáo Phân Tích Kỹ Thuật & Tự Đánh Giá
 
-**Học viên thực hiện:** Kiên (Cá nhân)  
+**Học viên thực hiện:** Đỗ Trung Kiên (Cá nhân) - 2A202601287 
 **Nhánh bài làm:** `ca-nhan-kien`  
 **Đề tài:** Lab 28 Track 2 — Platform Integration & Production Readiness  
 
