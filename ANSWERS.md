@@ -79,3 +79,35 @@ Mặc dù bài lab mô phỏng đầy đủ 10 điểm kết nối, một hệ t
 - **Xác thực GitOps & Kubernetes:**
   - Script xác thực: `scripts/validate_manifests.py` đạt 100% hợp lệ.
   - Ma trận tích hợp: `scripts/verify_matrix.py` đạt 245/245 checks.
+
+---
+
+## 5. Ghi Chú Sự Cố Thực Nghiệm, Dấu Hiệu Quan Sát & Phục Hồi
+
+- **Sự cố giả lập:** Ngắt kết nối dịch vụ suy luận mô hình vLLM trên cụm tính toán.
+- **Dấu hiệu quan sát:**
+  - Lệnh kiểm tra trạng thái ghi nhận probe `vllm` báo lỗi không thể kết nối.
+  - Endpoint kiểm tra mức độ sẵn sàng tại cổng vào không bị sập và không trả về mã lỗi 503, mà tự động chuyển sang trạng thái suy thoái mềm dẻo `degraded`.
+  - Các luồng tiếp nhận dữ liệu tài liệu qua Envoy Gateway và Kafka vẫn hoạt động bình thường, không bị gián đoạn.
+  - Hệ thống giám sát Prometheus và Jaeger vẫn thu thập đầy đủ chỉ số và mã theo dõi.
+- **Nguyên nhân gốc rễ:** Máy chủ suy luận vLLM chưa khởi chạy hoặc tài nguyên GPU chưa được kết nối.
+- **Cách khôi phục & Chứng minh không mất dữ liệu:**
+  - Kết nối lại endpoint vLLM từ máy chủ GPU hoặc hạ tầng dùng chung.
+  - Sau khi kết nối lại, hệ thống tự động kiểm tra probe và chuyển trạng thái từ `degraded` sang `ready`.
+  - Toàn bộ dữ liệu tài liệu và phản hồi đã gửi trong giai đoạn sự cố vẫn được lưu trữ an toàn trên hàng đợi Kafka và hoàn tất ghi nhận vào Lakehouse mà không bị thất thoát bất kỳ bản ghi nào.
+
+---
+
+## 6. Phần Suy Ngẫm & Đúc Kết (Reflection)
+
+- **Điều khó nhất trong bài thực hành:**
+  - Đảm bảo tính chống trùng lặp tuyệt đối khi dữ liệu được gửi lại nhiều lần qua Kafka. Việc thiết kế khóa định danh duy nhất và thuật toán so sánh cặp thời điểm xảy ra cùng mã sự kiện đòi hỏi sự chặt chẽ cao để không làm sai lệch bảng dữ liệu lớn.
+  - Duy trì ngữ cảnh mã theo dõi phân tán W3C đi xuyên suốt qua nhiều ranh giới công nghệ khác nhau (Envoy Gateway, FastAPI, Kafka headers, cơ sở dữ liệu vector và hệ thống giám sát).
+- **Các đánh đổi quan trọng đã lựa chọn:**
+  - Chọn lệnh cập nhật có kiểm tra khóa thay vì chỉ nối đuôi dữ liệu để đổi lấy tính nhất quán tuyệt đối của dữ liệu.
+  - Tách biệt kho lưu trữ dữ liệu lớn ngoại tuyến và kho lưu trữ đặc trưng trực tuyến tốc độ cao để đảm bảo độ trễ phục vụ người dùng dưới 50 mili-giây.
+  - Áp dụng cơ chế ba trạng thái sẵn sàng để bảo vệ cổng giao tiếp không bị sập diện rộng khi một dịch vụ phụ gặp sự cố tạm thời.
+- **Những điểm sẽ cải tiến khi triển khai thực tế:**
+  - Đưa toàn bộ cấu hình khai báo lên cụm Kubernetes thật kết hợp công cụ GitOps Argo CD để tự động phát hiện sai lệch và tự phục hồi trạng thái mong muốn.
+  - Xây dựng cơ chế tự động co giãn số lượng bản sao tính toán mô hình dựa trên độ dài hàng đợi yêu cầu thực tế.
+  - Tích hợp hệ thống quản lý khóa bảo mật chuyên dụng để quản lý thông tin xác thực thay cho việc cấu hình qua biến môi trường.
