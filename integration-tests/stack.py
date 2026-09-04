@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import time
 import uuid
@@ -110,14 +111,31 @@ def run_id() -> str:
 
 
 def compose(*args: str, timeout: float = 180.0) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        ["docker", "compose", "-f", str(COMPOSE_FILE), *args],
-        check=True,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        cwd=REPO_ROOT,
-    )
+    command = ["docker", "compose", "-f", str(COMPOSE_FILE), *args]
+    try:
+        return subprocess.run(
+            command,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=REPO_ROOT,
+        )
+    except subprocess.CalledProcessError as error:
+        # Docker Desktop's gRPC client can occasionally terminate with SIGTRAP
+        # after a container stop/start. Retry that client-side crash once; a
+        # service failure still reaches the existing readiness assertions.
+        if error.returncode != -signal.SIGTRAP:
+            raise
+        time.sleep(1)
+        return subprocess.run(
+            command,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=REPO_ROOT,
+        )
 
 
 @contextmanager

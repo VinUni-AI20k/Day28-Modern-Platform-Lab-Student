@@ -288,6 +288,12 @@ def poison_batch(settings: Settings, gateway: httpx.Client, airflow: Airflow) ->
     payload = f'{{"schema_version": "1", "event_id": "{suffix}", truncated'.encode()
 
     before = dead_letter_count(settings.kafka)
+    stack.wait_until(
+        "the gateway to re-admit the recovered API",
+        lambda: gateway.get("/ready").status_code == 200,
+        timeout=120.0,
+        interval=2.0,
+    )
     accepted = gateway.post(
         "/api/v1/feedback",
         json={
