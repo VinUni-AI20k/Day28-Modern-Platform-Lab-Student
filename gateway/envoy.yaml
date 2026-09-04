@@ -74,10 +74,10 @@ static_resources:
           interval: 2s
           unhealthy_threshold: 1
           healthy_threshold: 1
-          # Liveness decides whether Envoy can route. Application readiness is
-          # deliberately proxied so students can see the exact degraded
-          # dependency report instead of an opaque "no healthy upstream".
-          http_health_check: {path: /health}
+          # Readiness decides routing: a pod that cannot serve grounded answers
+          # is ejected and the gateway answers with its own 503, while a pod
+          # that is merely degraded (Feast down) stays in rotation.
+          http_health_check: {path: /ready}
       common_lb_config:
         healthy_panic_threshold: {value: 0}
     - name: otel_collector
